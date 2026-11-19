@@ -20,6 +20,15 @@ def entero(valor):
     return numero(valor, 0)
 
 
+def nombres(zonas):
+    """Une nombres con comas y «y»: «Sur y Austral», «Norte, Centro y Sur»."""
+    return zonas[0] if len(zonas) == 1 else ", ".join(zonas[:-1]) + " y " + zonas[-1]
+
+
+def sismos(cantidad):
+    return f"{entero(cantidad)} {'sismo' if cantidad == 1 else 'sismos'}"
+
+
 def mes_en_curso(info):
     """True si el período termina antes de diciembre: el último mes está incompleto."""
     return info["fin"] < pd.Timestamp(info["anio"], 12, 31)
@@ -176,8 +185,8 @@ def seccion_calor(df, info):
                             aggfunc="count", observed=False)
                .reindex(index=ZONAS, columns=meses).fillna(0).astype(int))
     por_zona = tabla.sum(axis=1)
-    zona_alta = por_zona.idxmax()
-    zona_baja = por_zona.idxmin()
+    altas = [z for z in ZONAS if por_zona[z] == por_zona.max()]     # puede haber empate
+    bajas = [z for z in ZONAS if por_zona[z] == por_zona.min()]
 
     fig, ax = plt.subplots(figsize=(6.4, 3.6))
     sns.heatmap(tabla, annot=True, fmt="d", cmap="Reds", linewidths=1.5, linecolor="white",
@@ -188,12 +197,19 @@ def seccion_calor(df, info):
     ax.set_ylabel("")
     ax.tick_params(left=False, bottom=False)
     ax.grid(False)
-    ax.set_title(f"{zona_alta} concentra el {numero(por_zona.max() / por_zona.sum() * 100, 0)} % de los sismos")
+    porcentaje = numero(por_zona.max() / por_zona.sum() * 100, 0)
+    if len(altas) == 1:
+        ax.set_title(f"{altas[0]} concentra el {porcentaje} % de los sismos")
+    else:
+        ax.set_title(f"{nombres(altas)} concentran el {porcentaje} % cada una")
+    if len(bajas) == 1:
+        menos = f"La zona con menos actividad es {bajas[0]} ({sismos(por_zona.min())})."
+    else:
+        menos = f"Las zonas con menos actividad son {nombres(bajas)} ({sismos(por_zona.min())} cada una)."
     rangos = " · ".join(f"{z}: {RANGOS_ZONAS[z]}" for z in ZONAS)
     return {"pregunta": "¿Qué zona y qué mes concentran más sismos?",
             "imagen": figura_a_imagen(fig),
-            "lectura": f"Cuanto más oscuro el cuadro, más sismos. La zona con menos actividad es "
-                       f"{zona_baja} ({entero(por_zona.min())} sismos). Zonas por latitud: {rangos}."}
+            "lectura": f"Cuanto más oscuro el cuadro, más sismos. {menos} Zonas por latitud: {rangos}."}
 
 
 # ---------- vista de detalle · 3 · Cajas: profundidad por zona ----------
