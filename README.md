@@ -1,9 +1,11 @@
 # Sismicidad en Chile · Ficha técnica
 
-**Aplicación desplegada:** `https://REEMPLAZAR-POR-LA-URL.vercel.app`
-**Repositorio:** `https://github.com/REEMPLAZAR-USUARIO/REEMPLAZAR-REPOSITORIO`
-**Integrantes:** Evelyn Tudela Bongiorno · REEMPLAZAR NOMBRE 2 · REEMPLAZAR NOMBRE 3
-**Asignatura:** Visualización de Datos (INACAP) · Evaluación N°3 · Docente: Fernando Aguilera
+**Aplicación desplegada:** https://tablero-sismos-chile.vercel.app
+
+**Repositorio:** https://github.com/EvelynTudelaBongiorno/tablero-sismos-chile
+
+**Integrantes:** Evelyn Tudela Bongiorno  
+Asignatura:Visualización de Datos (INACAP) · Evaluación N°3 · Docente: Fernando Aguilera
 
 ---
 
