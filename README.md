@@ -4,8 +4,9 @@
 
 **Repositorio:** https://github.com/EvelynTudelaBongiorno/tablero-sismos-chile
 
-**Integrantes:** Evelyn Tudela Bongiorno  
-Asignatura:Visualización de Datos (INACAP) · Evaluación N°3 · Docente: Fernando Aguilera
+**Integrantes:** Evelyn Tudela Bongiorno
+
+**Asignatura:** Visualización de Datos (INACAP) · Evaluación N°3 · Docente: Fernando Aguilera
 
 ---
 
@@ -160,9 +161,9 @@ El umbral de 70 km es la convención del USGS para clasificar un sismo como supe
 - *Afecta* a las personas que viven en las zonas mostradas: una cifra sobre el promedio puede generar alarma, y una cifra bajo el promedio puede dar falsa tranquilidad.
 - *Afecta* a la reputación de la fuente oficial: un tablero que se parezca a un sistema de alerta podría competir con ella o ser confundido con una.
 
-**Dilema ético que enfrentó el grupo.** Un indicador como «sismos en los últimos 30 días, sobre el promedio» puede interpretarse como una señal de que «viene uno grande», aunque la sismología no permite predecir sismos. Había que decidir entre mostrar el indicador con una lectura llamativa o priorizar la prudencia.
+**Dilema ético que enfrenté.** Un indicador como «sismos en los últimos 30 días, sobre el promedio» puede interpretarse como una señal de que «viene uno grande», aunque la sismología no permite predecir sismos. Tuve que decidir entre mostrar el indicador con una lectura llamativa o priorizar la prudencia.
 
-**Qué se decidió.**
+**Qué decidí.**
 
 1. Los indicadores se comparan contra una referencia histórica y se describen en lenguaje neutro: no hay etiquetas de alerta ni palabras como «peligro» o «riesgo».
 2. Cada vista declara en el pie de página que el tablero **no predice sismos** y que la fuente oficial en Chile es el Centro Sismológico Nacional, con enlace.
