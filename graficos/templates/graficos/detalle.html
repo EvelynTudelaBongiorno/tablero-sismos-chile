@@ -1,0 +1,41 @@
+{% extends "graficos/base.html" %}
+
+{% block vista %}
+  <!-- el mapa a la izquierda; a la derecha, los cortes por zona y por mes -->
+  <div class="detalle">
+    <section class="tarjeta mapa">
+      <span class="pregunta">{{ mapa.pregunta }}</span>
+      <div class="grafico"><img src="data:image/png;base64,{{ mapa.imagen }}" alt="{{ mapa.pregunta }}"></div>
+      <p class="lectura">{{ mapa.lectura }}</p>
+    </section>
+
+    <section class="tarjeta">
+      <span class="pregunta">{{ calor.pregunta }}</span>
+      <div class="grafico"><img src="data:image/png;base64,{{ calor.imagen }}" alt="{{ calor.pregunta }}"></div>
+      <p class="lectura">{{ calor.lectura }}</p>
+    </section>
+
+    <section class="tarjeta">
+      <span class="pregunta">{{ profundidad.pregunta }}</span>
+      <div class="grafico"><img src="data:image/png;base64,{{ profundidad.imagen }}" alt="{{ profundidad.pregunta }}"></div>
+      <p class="lectura">{{ profundidad.lectura }}</p>
+    </section>
+  </div>
+
+  <section class="tarjeta">
+    <h2>Los sismos más fuertes del período</h2>
+    <p class="descripcion">Con la ubicación que informa el USGS. Fecha y hora en UTC.</p>
+    <table>
+      <tr><th>Fecha</th><th class="der">Magnitud</th><th class="der">Profundidad</th><th>Zona</th><th>Ubicación</th></tr>
+      {% for f in fuertes %}
+      <tr>
+        <td>{{ f.fecha }}</td>
+        <td class="der"><strong>{{ f.mag }}</strong></td>
+        <td class="der">{{ f.prof }} km</td>
+        <td>&nbsp;&nbsp;{{ f.zona }}</td>
+        <td>{{ f.lugar }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </section>
+{% endblock %}

@@ -1,0 +1,6 @@
+Django
+requests
+numpy
+pandas
+matplotlib
+seaborn

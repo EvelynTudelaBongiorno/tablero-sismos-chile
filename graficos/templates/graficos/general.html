@@ -1,0 +1,31 @@
+{% extends "graficos/base.html" %}
+
+{% block vista %}
+  <!-- los tres KPI, cada uno con su valor de referencia -->
+  <section class="kpis">
+    {% for k in kpis %}
+    <div class="kpi">
+      <div class="kpi-etiqueta"><span>{{ k.etiqueta }}</span><span>{{ k.detalle }}</span></div>
+      <div class="valor">{{ k.valor }}<small>{{ k.unidad }}</small></div>
+      <span class="delta {% if k.sube is True %}sube{% elif k.sube is False %}baja{% endif %}">{{ k.comparacion }}</span>
+    </div>
+    {% endfor %}
+  </section>
+
+  <!-- gráficos de síntesis -->
+  {% with s=secciones.0 %}
+  <section class="tarjeta">
+    <span class="pregunta">{{ s.pregunta }}</span>
+    <div class="grafico"><img src="data:image/png;base64,{{ s.imagen }}" alt="{{ s.pregunta }}"></div>
+    <p class="lectura">{{ s.lectura }}</p>
+  </section>
+  {% endwith %}
+
+  {% with s=secciones.1 %}
+  <section class="tarjeta">
+    <span class="pregunta">{{ s.pregunta }}</span>
+    <div class="grafico"><img src="data:image/png;base64,{{ s.imagen }}" alt="{{ s.pregunta }}" style="max-width: 640px; margin-left: auto; margin-right: auto;"></div>
+    <p class="lectura">{{ s.lectura }}</p>
+  </section>
+  {% endwith %}
+{% endblock %}

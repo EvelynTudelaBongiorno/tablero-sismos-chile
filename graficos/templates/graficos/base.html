@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sismicidad en Chile · Tablero con datos del USGS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --rojo: #D40202;
+      --tinta: #0F0F12;
+      --texto: #18181B;
+      --gris: #71717A;
+      --gris-claro: #A1A1AA;
+      --borde: #E7E7EA;
+      --fondo: #F5F5F7;
+      --blanco: #FFFFFF;
+      --radio: 16px;
+      --sombra: 0 1px 2px rgba(15, 15, 18, .04), 0 8px 24px rgba(15, 15, 18, .06);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Inter", "Segoe UI", system-ui, sans-serif; color: var(--texto);
+           background: var(--fondo); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    .contenedor { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+    .mono { font-family: "JetBrains Mono", Consolas, monospace; }
+
+    /* ---------- portada oscura con el menú y los filtros ---------- */
+    .portada {
+      background: radial-gradient(1200px 400px at 85% -20%, rgba(212, 2, 2, .45), transparent 60%),
+                  linear-gradient(160deg, #17171B 0%, var(--tinta) 100%);
+      color: var(--blanco); padding: 26px 0 120px;
+    }
+    .barra { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .marca { display: flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: -.01em; }
+    .logo { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center;
+            background: var(--rojo); font-size: 14px; font-weight: 800; }
+    .menu { display: flex; padding: 4px; border-radius: 12px; background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .1); }
+    .menu a { padding: 7px 18px; border-radius: 8px; font-size: 14px; color: #D4D4D8; }
+    .menu a.activa { background: var(--blanco); color: var(--tinta); font-weight: 700; }
+
+    .titular { margin-top: 44px; }
+    .titular .eyebrow { font-size: 12.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: #FCA5A5; }
+    .titular h1 { margin: 8px 0 8px; font-size: 40px; font-weight: 800; letter-spacing: -.03em; line-height: 1.1; }
+    .titular p { margin: 0; color: #A1A1AA; font-size: 15px; }
+
+    .controles { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; margin-top: 30px; }
+    .grupo { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .grupo .nombre { font-size: 12.5px; color: #A1A1AA; font-weight: 500; }
+    .segmentos { display: flex; padding: 4px; border-radius: 12px; background: rgba(255, 255, 255, .06);
+                 border: 1px solid rgba(255, 255, 255, .1); }
+    .segmento { padding: 6px 14px; border-radius: 8px; font-size: 14px; color: #D4D4D8; }
+    .segmento:hover { color: var(--blanco); }
+    .segmento.activa { background: var(--rojo); color: var(--blanco); font-weight: 600; }
+
+    /* ---------- contenido que se monta sobre la portada ---------- */
+    main.contenedor { margin-top: -84px; padding-bottom: 56px; }
+    .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .kpi { background: var(--blanco); border-radius: var(--radio); padding: 24px 26px; box-shadow: var(--sombra); }
+    .kpi-etiqueta { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--gris); font-weight: 500; }
+    .kpi-etiqueta span:last-child { color: var(--gris-claro); white-space: nowrap; }
+    .valor { margin: 12px 0 10px; font-size: 38px; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+    .valor small { margin-left: 6px; font-size: 14px; font-weight: 500; color: var(--gris); letter-spacing: 0; }
+    .delta { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500;
+             padding: 5px 10px; border-radius: 8px; background: #F4F4F5; color: #3F3F46; }
+    .delta.sube::before { content: "▲"; font-size: 10px; color: var(--rojo); }
+    .delta.baja::before { content: "▼"; font-size: 10px; color: var(--gris); }
+
+    .tarjeta { background: var(--blanco); border-radius: var(--radio); box-shadow: var(--sombra); padding: 26px 28px; margin-top: 20px; }
+    .pregunta { font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--rojo); }
+    .grafico img { display: block; width: 100%; margin: 14px 0 16px; }
+    .lectura { margin: 0; font-size: 14px; color: #52525B; padding-top: 14px; border-top: 1px solid var(--borde); }
+    .dos { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .dos .tarjeta { margin-top: 20px; }
+    /* en el detalle: el mapa ocupa la columna izquierda completa */
+    .detalle { display: grid; grid-template-columns: 5fr 6fr; gap: 20px; }
+    .detalle .mapa { grid-row: span 2; }
+    .detalle .tarjeta { margin-top: 20px; }
+
+    h2 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+    .descripcion { margin: 4px 0 0; font-size: 14px; color: var(--gris); }
+    .consola { background: var(--tinta); color: #E4E4E7; border-radius: 12px; padding: 18px 20px; margin-top: 16px;
+               font-size: 12.5px; line-height: 1.9; overflow-x: auto; word-break: break-all; }
+    .consola .metodo { color: #4ADE80; font-weight: 600; }
+    .consola .tenue { color: #71717A; }
+    .consola .ok { color: #4ADE80; }
+    .aviso { margin: 14px 0 0; font-size: 13px; color: #92400E; background: #FFFBEB; border-radius: 8px; padding: 8px 12px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+    th { text-align: left; font-size: 12px; font-weight: 600; color: var(--gris-claro); text-transform: uppercase; letter-spacing: .05em; padding: 8px 0; border-bottom: 1px solid var(--borde); }
+    td { padding: 10px 0; border-bottom: 1px solid #F1F1F3; font-variant-numeric: tabular-nums; }
+    tr:last-child td { border-bottom: none; }
+    .der { text-align: right; }
+    .error { text-align: center; padding: 48px 28px; }
+    .error .icono { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 16px;
+                    background: #FEF2F2; color: var(--rojo); font-size: 26px; font-weight: 800; }
+    .error h2 { font-size: 20px; }
+    footer { margin-top: 32px; text-align: center; font-size: 13px; color: var(--gris); }
+    footer a { text-decoration: underline; }
+
+    @media (max-width: 860px) {
+      .kpis, .dos, .detalle { grid-template-columns: 1fr; }
+      .detalle .mapa { grid-row: auto; }
+      .titular h1 { font-size: 30px; }
+      .contenedor { padding: 0 18px; }
+    }
+  </style>
+</head>
+<body>
+<!-- portada: el menú cambia de vista y los filtros arman la consulta ?anio=…&mag=…; ambos se conservan -->
+<header class="portada">
+  <div class="contenedor">
+    <div class="barra">
+      <div class="marca"><div class="logo">SC</div>Sismicidad en Chile</div>
+      <nav class="menu">
+        <a class="{% if vista == 'general' %}activa{% endif %}" href="{% url 'general' %}?{{ consulta }}">Vista general</a>
+        <a class="{% if vista == 'detalle' %}activa{% endif %}" href="{% url 'detalle' %}?{{ consulta }}">Vista de detalle</a>
+      </nav>
+    </div>
+
+    <div class="titular">
+      <div class="eyebrow">{% if vista == 'general' %}Vista general · ¿cómo está la actividad?{% else %}Vista de detalle · ¿dónde y cuándo ocurre?{% endif %}</div>
+      <h1>Sismos en Chile, {{ anio }}</h1>
+      <p>{% if periodo %}{{ registros }} sismos de magnitud {{ mag_texto }} o más · Período: {{ periodo }} · API: catálogo de sismos del USGS{% else %}API: catálogo de sismos del USGS (earthquake.usgs.gov){% endif %}</p>
+    </div>
+
+    <div class="controles">
+      <div class="grupo">
+        <span class="nombre">Año</span>
+        <nav class="segmentos">
+          {% for a in anios %}
+          <a class="segmento {% if a == anio %}activa{% endif %}" href="?anio={{ a }}&mag={{ mag_txt }}">{{ a }}</a>
+          {% endfor %}
+        </nav>
+      </div>
+      <div class="grupo">
+        <span class="nombre">Magnitud mínima</span>
+        <nav class="segmentos">
+          {% for m in magnitudes %}
+          <a class="segmento {% if m.valor == mag_txt %}activa{% endif %}" href="?anio={{ anio }}&mag={{ m.valor }}">{{ m.texto }}</a>
+          {% endfor %}
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="contenedor">
+{% if error %}
+  <!-- la API falló o no hay datos: se explica qué pasó en vez de mostrar un error de Python -->
+  <section class="tarjeta error">
+    <div class="icono">!</div>
+    <h2>No se pudieron mostrar los datos</h2>
+    <p class="descripcion">{{ error }}</p>
+  </section>
+{% else %}
+  {% block vista %}{% endblock %}
+
+  <!-- trazabilidad: de dónde vienen los datos y qué período cubren -->
+  <section class="tarjeta">
+    <h2>De dónde vienen los datos</h2>
+    <p class="descripcion">API pública del Servicio Geológico de Estados Unidos (USGS). Período: {{ periodo }} (hora UTC). La consulta que produjo este tablero:</p>
+    <div class="consola mono">
+      <div><span class="metodo">GET</span> {{ info.url }}</div>
+      <div class="tenue">{% if info.desde_cache %}↺ respuesta guardada en caché (menos de una hora){% else %}↓ recién pedida a la API{% endif %}</div>
+    </div>
+    {% if info.truncado %}
+    <p class="aviso">La API entregó el máximo de eventos por consulta: los datos de este año podrían estar incompletos.</p>
+    {% endif %}
+  </section>
+{% endif %}
+
+  <footer>
+    Fuente: <a href="https://earthquake.usgs.gov/fdsnws/event/1/">USGS Earthquake Catalog</a>. Los datos se consultan en línea y pueden diferir de los del
+    <a href="https://www.sismologia.cl">Centro Sismológico Nacional</a>, fuente oficial en Chile. Este tablero no predice sismos.
+  </footer>
+</main>
+</body>
+</html>
